@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify';
-import { getJungle } from '../controllers/controller';
+import { getTop } from '../controllers/controller';
 
 export const routes = async (fastify: FastifyInstance) => {
-	fastify.get('/toplaner/jungle', getJungle);
+	fastify.get('/jungle/top', getTop);
 };

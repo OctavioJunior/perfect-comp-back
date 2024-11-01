@@ -1,23 +1,27 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
-import { scrapeSynergyChampions } from '../services/scrapper';
+import { findJunglers } from '../services/service';
 
-interface urlString {
-	url?: string;
+interface ChampionQuery {
+	championName?: string;
 }
 
-export const getJungle = async (
-	request: FastifyRequest<{ Querystring: urlString }>,
+export const getTop = async (
+	request: FastifyRequest<{ Querystring: ChampionQuery }>,
 	reply: FastifyReply,
 ) => {
 	try {
-		const url = 'https://www.leagueofgraphs.com/champions/counters/aatrox';
+		const { championName } = request.query;
 
-		if (typeof url !== 'string' || !url.startsWith('http')) {
-			reply.status(400).send({ error: 'URL inválida!' });
+		if (!championName || typeof championName !== 'string') {
+			reply
+				.status(400)
+				.send({ error: 'Nome do campeão é inválido ou não fornecido!' });
 			return;
 		}
 
-		const result = await scrapeSynergyChampions(url);
+		const url = `https://www.leagueofgraphs.com/champions/counters/${championName}`;
+
+		const result = await findJunglers(url);
 
 		if (!result) {
 			reply.status(500).send({ error: 'Falha no scraping.' });
